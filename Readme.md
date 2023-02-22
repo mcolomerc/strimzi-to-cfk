@@ -117,6 +117,8 @@ cluster.id=TIkMCeOOSLaet3sEmUZRfg
 
 4. Cluster Linking
 
+Edit and update the cluster ID in `./confluent/cluster-link.yaml`
+
 `kubectl apply -f ./confluent/cluster-link.yaml`
 
 5. Describe Cluster Link
