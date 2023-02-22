@@ -1,0 +1,21 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: ClusterLink
+metadata:
+  name: clusterlink-cflt
+  namespace: confluent
+spec:
+  destinationKafkaCluster:
+    kafkaRestClassRef:
+      name: kafkarestclass
+      namespace: confluent
+  sourceKafkaCluster:
+    bootstrapEndpoint: strimzi-cluster-kafka-bootstrap.default.svc.cluster.local:9092
+    clusterID: TIkMCeOOSLaet3sEmUZRfg
+  mirrorTopicOptions:
+    autoCreateTopics: 
+      enabled: true
+      topicFilters: 
+        - filterType: INCLUDE
+          name: '*'
+          patternType: LITERAL
+    prefix: "dest-"
