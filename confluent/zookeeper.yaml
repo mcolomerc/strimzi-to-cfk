@@ -4,6 +4,8 @@ metadata:
   name: zookeeper
   namespace: confluent
 spec:
+  license:
+    globalLicense: true
   replicas: 3
   image:
     application: confluentinc/cp-zookeeper:7.3.0

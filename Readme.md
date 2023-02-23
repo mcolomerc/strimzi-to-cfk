@@ -60,19 +60,7 @@ helm install kafka-ui kafka-ui/kafka-ui --set envs.config.KAFKA_CLUSTERS_0_NAME=
 
 1. Install Confluent Operator
 
-Create a namespace for the Confluent Operator: `kubectl create namespace confluent`
-
-Deploy with Helm:
-
-`helm repo add confluentinc https://packages.confluent.io/helm`
-
-`helm repo update`
-
-`helm upgrade --install confluent-operator confluentinc/confluent-for-kubernetes --namespace confluent`
-
-2. Create Kafka Cluster, Zookeeper, and control center
-
-Generate a CA pair to use
+Generate a CA pair to use (`./confluent/certs.sh`)
 
 `openssl genrsa -out ca-key.pem 2048`
 
@@ -87,7 +75,27 @@ Create a Kubernetes secret for the certificate authority:
 
 `kubectl create secret tls ca-pair-sslcerts --cert=ca.pem --key=ca-key.pem -n confluent`
 
-Deployment: 
+Create a namespace for the Confluent Operator: `kubectl create namespace confluent`
+
+Deploy with Helm:
+
+`helm repo add confluentinc https://packages.confluent.io/helm`
+
+`helm repo update`
+
+Helm values:
+
+- Configure the license key(`./confluent/values.yaml`):
+  
+```yaml
+licenseKey: "<license-key>"
+```
+
+`helm upgrade --install confluent-operator confluentinc/confluent-for-kubernetes --namespace confluent --values ./confluent/values.yaml`
+
+1. Create Kafka Cluster, Zookeeper, and Control Center
+ 
+Deployment:
 
 `kubectl apply -f ./confluent/zookeeper.yaml`
 
@@ -95,7 +103,7 @@ Deployment:
 
 `kubectl apply -f ./confluent/kafkarestclass.yaml`
 
-Control center: 
+Control center:
 
 `kubectl apply -f ./confluent/controlcenter.yaml`
 
@@ -124,3 +132,42 @@ Edit and update the cluster ID in `./confluent/cluster-link.yaml`
 5. Describe Cluster Link
 
 `kubectl get clusterlink clusterlink-cflt -oyaml -n confluent`
+
+--- 
+
+## Monitoring 
+
+Prometheus and Grafana
+
+Prometheus deployment:
+
+```sh
+helm upgrade --install prometheus prometheus-community/prometheus  \
+ --set alertmanager.persistentVolume.enabled=false \
+ --set server.persistentVolume.enabled=false \
+ --namespace monitoring
+```
+
+Prometheus Port Forwarding:
+
+`kubectl port-forward --namespace monitoring $(kubectl get pod --namespace monitoring --selector="app=prometheus,component=server,release=prometheus" --output jsonpath='{.items[0].metadata.name}') 8080:9090`
+
+- Installing Grafana:
+
+Grafana Dashboard ConfigMap:
+ 
+`kubectl apply -f ./grafana/dashboards/clink-dashboard-configmap.yaml`
+
+Deployment:
+
+`helm upgrade --install grafana grafana/grafana --namespace monitoring --values ./grafana/values.yaml`
+
+Get your 'admin' user password:
+
+`kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode`
+
+Grafana Port Forwarding:
+
+`kubectl port-forward --namespace monitoring $(kubectl get pod --namespace monitoring --selector="app.kubernetes.io/instance=grafana,app.kubernetes.io/name=grafana" --output jsonpath='{.items[0].metadata.name}') 8090:3000`
+
+---

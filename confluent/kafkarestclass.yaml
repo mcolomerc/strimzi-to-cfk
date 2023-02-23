@@ -3,7 +3,7 @@ kind: KafkaRestClass
 metadata:
   name: kafkarestclass
   namespace: confluent
-spec:
+spec: 
   kafkaClusterRef:
     name: kafka
     namespace: confluent
