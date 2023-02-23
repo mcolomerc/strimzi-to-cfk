@@ -58,7 +58,7 @@ helm install kafka-ui kafka-ui/kafka-ui --set envs.config.KAFKA_CLUSTERS_0_NAME=
 
 ## Confluent For Kubernetes
 
-1. Install Confluent Operator
+1. Install Confluent Operator 
 
 Generate a CA pair to use (`./confluent/certs.sh`)
 
@@ -71,12 +71,12 @@ Generate a CA pair to use (`./confluent/certs.sh`)
   -subj "/C=US/ST=CA/L=MountainView/O=Confluent/OU=Operator/CN=TestCA"
 ```
 
+Create a namespace for the Confluent Operator: `kubectl create namespace confluent`
+
 Create a Kubernetes secret for the certificate authority:
 
 `kubectl create secret tls ca-pair-sslcerts --cert=ca.pem --key=ca-key.pem -n confluent`
-
-Create a namespace for the Confluent Operator: `kubectl create namespace confluent`
-
+ 
 Deploy with Helm:
 
 `helm repo add confluentinc https://packages.confluent.io/helm`
@@ -137,9 +137,11 @@ Edit and update the cluster ID in `./confluent/cluster-link.yaml`
 
 ## Monitoring 
 
-Prometheus and Grafana
+Create a `monitoring` namespace: `kubectl create namespace monitoring`
 
-Prometheus deployment:
+### Prometheus and Grafana
+
+- Prometheus deployment:
 
 ```sh
 helm upgrade --install prometheus prometheus-community/prometheus  \
@@ -154,7 +156,7 @@ Prometheus Port Forwarding:
 
 - Installing Grafana:
 
-Grafana Dashboard ConfigMap:
+Grafana Cluster Linking Dashboard ConfigMap:
  
 `kubectl apply -f ./grafana/dashboards/clink-dashboard-configmap.yaml`
 
