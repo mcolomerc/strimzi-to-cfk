@@ -4,6 +4,8 @@ metadata:
   name: kafka
   namespace: confluent
 spec:
+  license:
+    globalLicense: true
   configOverrides:
     server:
       - "confluent.cluster.link.enable=true"
