@@ -160,6 +160,8 @@ Grafana Cluster Linking Dashboard ConfigMap:
  
 `kubectl apply -f ./grafana/dashboards/clink-dashboard-configmap.yaml`
 
+[Monitoring Cluster Linking](https://docs.confluent.io/platform/current/multi-dc-deployments/cluster-linking/metrics.html#monitoring-cluster-metrics-and-optimizing-links)
+
 Deployment:
 
 `helm upgrade --install grafana grafana/grafana --namespace monitoring --values ./grafana/values.yaml`
